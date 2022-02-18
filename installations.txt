@@ -1,0 +1,6 @@
+npm i axios react-file-base64 @material-ui/core redux redux-thunk react-redux
+
+npm i @emotion/react
+npm i @emotion/styled
+npm i @mui/material
+npm i @mui/icons-material
