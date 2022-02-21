@@ -15,7 +15,7 @@ app.use(cors());
 dotenv.config({ path: "config.env" });
 const PORT = process.env.PORT || 8080;
 
-connectDB();
+connectDB()
 
 app.use('/products', postRouter)
 
