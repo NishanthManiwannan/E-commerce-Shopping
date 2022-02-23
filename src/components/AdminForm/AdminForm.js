@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Checkbox, TextField, Typography, Button } from "@mui/material";
 import FileBase from "react-file-base64";
 
-import { useDispatch } from "react-redux";
-import { addProduct } from "../../actions/products";
+import { useDispatch, useSelector } from "react-redux";
+import { addProduct, updateProduct } from "../../actions/products";
 
 import useStyles from "./styles";
 
-function Form() {
+function Form({ currentId, setCurrentId }) {
+  //- use selectr for find the product for purticular id
+  const product = useSelector((state) =>
+    currentId ? state.products.find((id) => id._id === currentId) : null
+  );
+
   const dispatch = useDispatch();
   const classes = useStyles();
 
@@ -23,6 +28,10 @@ function Form() {
     imgFile: "",
   });
 
+  useEffect(() => {
+    if (product) setProductData(product);
+  }, [product]);
+
   const [arraySize, setArraySize] = useState([]);
   const [addCatagory, setCatagory] = useState([
     "",
@@ -31,12 +40,6 @@ function Form() {
     "Kids Wears",
     "Sports Wears",
   ]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(productData);
-    dispatch(addProduct(productData));
-  };
 
   const getCheckedVal = (e) => {
     if (e.target.checked) {
@@ -61,7 +64,29 @@ function Form() {
     console.log(productData);
   };
 
-  const clear = () => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (currentId) {
+      dispatch(updateProduct(currentId, productData));
+    } else {
+      dispatch(addProduct(productData));
+    }
+  };
+
+  const clear = () => {
+    setCurrentId(null);
+    setProductData({
+      prodectName: "",
+      sizes: [],
+      catagory: "",
+      discription: "",
+      prize: "",
+      qty: "",
+      brand: "",
+      imgFile: "",
+    });
+  };
 
   return (
     <>
@@ -72,7 +97,7 @@ function Form() {
         noValidate
       >
         <Typography variant="h3" align="center">
-          Add products
+          {currentId ? "Update" : "Add New"} product
         </Typography>
 
         <div style={{ margin: "10px" }}>
@@ -218,10 +243,10 @@ function Form() {
             type="submit"
             fullWidth
           >
-            Submit
+           {currentId ? "Update Product" : "Add Product"}
           </Button>
         </div>
-        
+
         <div style={{ margin: "10px" }}>
           <Button
             variant="contained"
