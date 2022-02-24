@@ -27,11 +27,6 @@ function Form({ currentId, setCurrentId }) {
     brand: "",
     imgFile: "",
   });
-
-  useEffect(() => {
-    if (product) setProductData(product);
-  }, [product]);
-
   const [arraySize, setArraySize] = useState([]);
   const [addCatagory, setCatagory] = useState([
     "",
@@ -40,8 +35,18 @@ function Form({ currentId, setCurrentId }) {
     "Kids Wears",
     "Sports Wears",
   ]);
+  const [sizes, setSizes] = useState(["S", "M", "L", "XL"]);
+
+  useEffect(() => {
+    if (product){
+      setProductData(product);
+      setArraySize(product.sizes);
+      document.getElementById("catagory").value = product.catagory;
+    } 
+  }, [product]);
 
   const getCheckedVal = (e) => {
+    console.log(e.target.checked)
     if (e.target.checked) {
       arraySize.push(e.target.value);
       setArraySize(arraySize);
@@ -60,7 +65,7 @@ function Form({ currentId, setCurrentId }) {
   const Add = addCatagory.map((Add) => Add);
 
   const getDropdownVal = (e) => {
-    setProductData({ ...productData, catagory: addCatagory[e.target.value] });
+    setProductData({ ...productData, catagory: e.target.value });
     console.log(productData);
   };
 
@@ -72,6 +77,8 @@ function Form({ currentId, setCurrentId }) {
     } else {
       dispatch(addProduct(productData));
     }
+
+    clear();
   };
 
   const clear = () => {
@@ -86,6 +93,7 @@ function Form({ currentId, setCurrentId }) {
       brand: "",
       imgFile: "",
     });
+    document.getElementById("catagory").value = null;
   };
 
   return (
@@ -118,50 +126,26 @@ function Form({ currentId, setCurrentId }) {
         <div style={{ margin: "10px" }}>
           <div className={classes.checkBox}>
             <p>Select Available Sizes :</p>
-            <span>
-              Small
-              <Checkbox
-                color="default"
-                value="S"
-                size="small"
-                onChange={(e) => getCheckedVal(e)}
-              />
-            </span>
-            <span>
-              Medium
-              <Checkbox
-                color="default"
-                value="M"
-                size="small"
-                onChange={(e) => getCheckedVal(e)}
-              />
-            </span>
-            <span>
-              Large
-              <Checkbox
-                color="default"
-                value="L"
-                size="small"
-                onChange={(e) => getCheckedVal(e)}
-              />
-            </span>
-            <span>
-              XL
-              <Checkbox
-                color="default"
-                value="XL"
-                size="small"
-                onChange={(e) => getCheckedVal(e)}
-              />
-            </span>
+            {sizes.map((sizes) => (
+              <span>
+                {sizes}
+                <Checkbox
+                  color="default"
+                  value={sizes}
+                  size="small"
+                  checked={currentId ? arraySize.includes(sizes) : (null)}
+                  onChange={(e) => getCheckedVal(e)}
+                />
+              </span>
+            ))}
           </div>
         </div>
 
         <div style={{ margin: "10px" }}>
           <p>Select Catagory :</p>
-          <select onChange={(e) => getDropdownVal(e)}>
+          <select id="catagory" onChange={(e) => getDropdownVal(e)}>
             {Add.map((address, key) => (
-              <option key={key} value={key}>
+              <option key={key} value={address}>
                 {address}
               </option>
             ))}
@@ -243,7 +227,7 @@ function Form({ currentId, setCurrentId }) {
             type="submit"
             fullWidth
           >
-           {currentId ? "Update Product" : "Add Product"}
+            {currentId ? "Update Product" : "Add Product"}
           </Button>
         </div>
 
